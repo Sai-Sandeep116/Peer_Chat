@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keylogger</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to the CSS file -->
+</head>
+<body>
+    <h1>Keylogger</h1>
+    <button id="start">Start Keylogger</button>
+    <div id="keystrokes"></div>
+
+    <script>
+        const startButton = document.getElementById('start');
+        const keystrokesDiv = document.getElementById('keystrokes');
+        let socket;
+
+        startButton.addEventListener('click', () => {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                socket = new WebSocket('ws://localhost:3000');
+
+                socket.onopen = () => {
+                    keystrokesDiv.textContent += 'Connected to the keylogger.\n';
+                };
+
+                socket.onmessage = (event) => {
+                    keystrokesDiv.textContent += `${event.data}\n`;
+                    keystrokesDiv.scrollTop = keystrokesDiv.scrollHeight; // Auto-scroll
+                };
+
+                socket.onclose = () => {
+                    keystrokesDiv.textContent += 'Disconnected from the keylogger.\n';
+                };
+            }
+        });
+    </script>
+</body>
+</html>
